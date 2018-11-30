@@ -44,7 +44,7 @@ public class PresentadorMapa implements IPresentadorMapa {
                 appMediador.getVistaMapa().actualizarMapa(datos);
 
             } else if (intent.getAction().equals(AppMediador.AVISO_BORRAR_MARCA)){
-                
+
             }
             appMediador.unRegisterReceiver(this);
         }
@@ -57,8 +57,8 @@ public class PresentadorMapa implements IPresentadorMapa {
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(AppMediador.AVISO_LOCALIZACION_GPS)){
                 Object[] datos = new Object[3];
-                datos[0] = intent.getDoubleExtra(AppMediador.CLAVE_LATITUD, 28.1132);
-                datos[1] = intent.getDoubleExtra(AppMediador.CLAVE_LONGITUD,  -15.4409);
+                datos[0] = intent.getDoubleExtra(AppMediador.CLAVE_LATITUD, 0);
+                datos[1] = intent.getDoubleExtra(AppMediador.CLAVE_LONGITUD,  0);
                 datos[2] = "Mi ubicación";
                 appMediador.getVistaMapa().actualizarMapa(datos);
                 appMediador.unRegisterReceiver(this);
@@ -89,15 +89,15 @@ public class PresentadorMapa implements IPresentadorMapa {
     @Override
     public void actualizarMapa(int estado, Object datos) {
         switch (estado){
-            case '0':
+            case AppMediador.ESTADO_INICIAL:
                 appMediador.registerReceiver(receptorAvisos, AppMediador.AVISO_ESTADO_INICIAL);
                 modelo.actualizarMapas();
                 break;
-            case '1':
+            case AppMediador.ESTADO_AGREGAR_MARCA:
                 appMediador.registerReceiver(receptorAvisos, AppMediador.AVISO_AGREGAR_MARCA);
                 modelo.agregarMarca(datos);
                 break;
-            case '2':
+            case AppMediador.ESTADO_BORRAR_MARCA:
                 appMediador.registerReceiver(receptorAvisos, AppMediador.AVISO_BORRAR_MARCA);
                 modelo.borrarMarca(datos);
                 break;

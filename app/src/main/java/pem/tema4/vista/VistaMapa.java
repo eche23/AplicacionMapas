@@ -49,7 +49,8 @@ public class VistaMapa extends FragmentActivity implements OnMapReadyCallback, I
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         // TODO Asociar al mapa los listener para manejar el toque del mapa y de los iconos
-
+        mMap.setOnMapClickListener(this);
+        mMap.setOnMarkerClickListener(this);
         // TODO Solicitar al presentador que inice el GPS
         appMediador.getPresentadorMapa().iniciarGps();
         // TODO Solicitar al presentador que actualice el mapa en el estado inicial

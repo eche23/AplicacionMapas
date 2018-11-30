@@ -46,7 +46,7 @@ public class ServicioLocalizacion extends Service implements LocationListener {
     public void onLocationChanged(Location location) {
         // TODO Enviar al presentador, la latitud y longitud obtenida por el GPS.
         Bundle extras = new Bundle();
-        extras.putDouble(AppMediador.CLAVE_LATITUD,location.getAltitude());
+        extras.putDouble(AppMediador.CLAVE_LATITUD,location.getLatitude());
         extras.putDouble(AppMediador.CLAVE_LONGITUD,location.getLongitude());
         appMediador.sendBroadcast(AppMediador.AVISO_LOCALIZACION_GPS, extras);
     }

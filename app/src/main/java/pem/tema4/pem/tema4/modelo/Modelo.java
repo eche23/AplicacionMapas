@@ -38,16 +38,15 @@ public class Modelo implements IModelo {
 
     @Override
     public void actualizarMapas() {
-
+        adaptadorBD = adaptadorBD.abrir();
+        Bundle extras = null;
         if (adaptadorBD != null){
-            adaptadorBD.abrir();
-
             ArrayList<DatoMarca> datoMarcas = adaptadorBD.obtenerRegistros();
-            Bundle extras = new Bundle();
-            extras.putSerializable(AppMediador.AVISO_ESTADO_INICIAL, datoMarcas);
-            appMediador.sendBroadcast(AppMediador.CLAVE_MARCAS, extras);
+            extras= new Bundle();
+            extras.putSerializable(AppMediador.CLAVE_MARCAS, datoMarcas);
             adaptadorBD.cerrar();
         }
+        appMediador.sendBroadcast(AppMediador.AVISO_ESTADO_INICIAL, extras);
     }
 
 
