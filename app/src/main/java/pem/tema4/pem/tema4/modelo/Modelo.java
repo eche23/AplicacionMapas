@@ -1,6 +1,7 @@
 package pem.tema4.pem.tema4.modelo;
 
 import android.os.Bundle;
+
 import pem.tema4.AppMediador;
 import pem.tema4.pem.tema4.modelo.bajo_nivel.ServicioLocalizacion;
 
@@ -24,8 +25,6 @@ public class Modelo implements IModelo {
     }
 
 
-
-
     // TODO Método redefinido iniciarGps que obtiene la posición Gps del dispositivo
 
     @Override
@@ -40,15 +39,14 @@ public class Modelo implements IModelo {
     public void actualizarMapas() {
         adaptadorBD = adaptadorBD.abrir();
         Bundle extras = null;
-        if (adaptadorBD != null){
+        if (adaptadorBD != null) {
             ArrayList<DatoMarca> datoMarcas = adaptadorBD.obtenerRegistros();
-            extras= new Bundle();
+            extras = new Bundle();
             extras.putSerializable(AppMediador.CLAVE_MARCAS, datoMarcas);
-            adaptadorBD.cerrar();
         }
+        adaptadorBD.cerrar();
         appMediador.sendBroadcast(AppMediador.AVISO_ESTADO_INICIAL, extras);
     }
-
 
 
     // TODO Método redefinido agregarMarca que agrega una marca a la base de datos. El método recibe por parámetros un
@@ -59,37 +57,44 @@ public class Modelo implements IModelo {
 
     @Override
     public void agregarMarca(Object datos) {
-        if (adaptadorBD != null){
-            adaptadorBD.abrir();
+        adaptadorBD = adaptadorBD.abrir();
+        Bundle extras = null;
+        if (adaptadorBD != null) {
             Object[] marca = (Object[]) datos;
             double latitud = (double) marca[0];
             double longitud = (double) marca[1];
             String titulo = (String) marca[2];
             adaptadorBD.crearRegistro(latitud, longitud, titulo);
-            adaptadorBD.cerrar();
-            Bundle extras = new Bundle();
+
+            extras = new Bundle();
             extras.putDouble(AppMediador.CLAVE_LATITUD, latitud);
             extras.putDouble(AppMediador.CLAVE_LONGITUD, longitud);
-            extras.putSerializable(AppMediador.CLAVE_TITULO, titulo);
-            appMediador.sendBroadcast(AppMediador.AVISO_AGREGAR_MARCA, extras);
+            extras.putString(AppMediador.CLAVE_TITULO, titulo);
 
-         }
+        }
+        adaptadorBD.cerrar();
+        appMediador.sendBroadcast(AppMediador.AVISO_AGREGAR_MARCA, extras);
+
     }
 
     // TODO Método redefinido borrarMarca que borra una marca de la base de datos
 
     @Override
     public void borrarMarca(Object datos) {
-        if (adaptadorBD != null){
-            adaptadorBD.abrir();
-            Object[] marca = (Object[]) datos;
-            double latitud = (double) marca[0];
-            double longitud = (double) marca[1];
-            String titulo = (String) marca[2];
+        adaptadorBD = adaptadorBD.abrir();
+        Bundle extras = null;
+        if (adaptadorBD !=null){
+            Object[] datosMarca = (Object[]) datos;
+            double latitud = (double) datosMarca[0];
+            double longitud = (double) datosMarca[1];
+            String titulo = (String) datosMarca[2];
             adaptadorBD.borrarRegistro(latitud, longitud, titulo);
-            adaptadorBD.cerrar();
-            Bundle extras = new Bundle();
-            appMediador.sendBroadcast(AppMediador.AVISO_BORRAR_MARCA, extras);
+            extras = new Bundle();
+
+
         }
+        adaptadorBD.cerrar();
+        appMediador.sendBroadcast(AppMediador.AVISO_BORRAR_MARCA, extras);
     }
+
 }

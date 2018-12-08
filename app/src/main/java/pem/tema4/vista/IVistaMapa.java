@@ -18,6 +18,6 @@ public interface IVistaMapa {
     void mostrarInformacion(Object informacion);
 
     // TODO Método llamado borrarMarca que borra una marca seleccionada por el usuario
-
+    void borrarMarca(Object marca);
 
 }

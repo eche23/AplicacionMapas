@@ -13,7 +13,7 @@ public interface IPresentadorMapa {
     void tratarToqueMapa(double latitud, double longitud);
 
     // TODO Método llamado tratarToqueMarca que trata un toque en una marca dada
-    void tratarTogueMarca(Object datos);
+    void tratarToqueMarca(Object datos);
 
     // TODO Método llamado editarMarca que edita la información de una marca dada
     void editarMarca(Object datos);

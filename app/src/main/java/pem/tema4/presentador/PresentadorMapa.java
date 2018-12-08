@@ -33,17 +33,23 @@ public class PresentadorMapa implements IPresentadorMapa {
                     datos[0] = datoMarcas.get(i).getLatitud();
                     datos[1] = datoMarcas.get(i).getLongitud();
                     datos[2] = datoMarcas.get(i).getTitulo();
-                    appMediador.getVistaMapa().actualizarMapa(datos);
+                    vistaMapa.actualizarMapa(datos);
 
                 }
             } else if (intent.getAction().equals(AppMediador.AVISO_AGREGAR_MARCA)){
+                double latitud = intent.getDoubleExtra(AppMediador.CLAVE_LATITUD, 0.0);
+                double longitud = intent.getDoubleExtra(AppMediador.CLAVE_LONGITUD, 0.0);
+                String titulo = intent.getStringExtra(AppMediador.CLAVE_TITULO);
                 Object[] datos = new Object[3];
-                datos[0] = intent.getDoubleExtra(AppMediador.CLAVE_LATITUD, 0.0);
-                datos[1] = intent.getDoubleExtra(AppMediador.CLAVE_LONGITUD, 0.0);
-                datos[2] = intent.getSerializableExtra(AppMediador.CLAVE_TITULO);
-                appMediador.getVistaMapa().actualizarMapa(datos);
+                datos[0] = latitud;
+                datos[1] = longitud;
+                datos[2] = titulo;
+                vistaMapa.actualizarMapa(datos);
 
             } else if (intent.getAction().equals(AppMediador.AVISO_BORRAR_MARCA)){
+                if (intent.getExtras() != null){
+                    vistaMapa.borrarMarca(marcaSeleccionada);
+                }
 
             }
             appMediador.unRegisterReceiver(this);
@@ -56,14 +62,17 @@ public class PresentadorMapa implements IPresentadorMapa {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(AppMediador.AVISO_LOCALIZACION_GPS)){
+                double latitud = intent.getDoubleExtra(AppMediador.CLAVE_LATITUD, 0.0);
+                double longitud = intent.getDoubleExtra(AppMediador.CLAVE_LONGITUD,  0.0);
                 Object[] datos = new Object[3];
-                datos[0] = intent.getDoubleExtra(AppMediador.CLAVE_LATITUD, 0);
-                datos[1] = intent.getDoubleExtra(AppMediador.CLAVE_LONGITUD,  0);
+                datos[0] = latitud;
+                datos[1] = longitud;
                 datos[2] = "Mi ubicación";
-                appMediador.getVistaMapa().actualizarMapa(datos);
-                appMediador.unRegisterReceiver(this);
-                appMediador.registerReceiver(this, AppMediador.AVISO_LOCALIZACION_GPS);
+                vistaMapa.actualizarMapa(datos);
+
             }
+            appMediador.unRegisterReceiver(this);
+            appMediador.registerReceiver(this, AppMediador.AVISO_LOCALIZACION_GPS);
         }
     };
 
@@ -99,10 +108,14 @@ public class PresentadorMapa implements IPresentadorMapa {
                 break;
             case AppMediador.ESTADO_BORRAR_MARCA:
                 appMediador.registerReceiver(receptorAvisos, AppMediador.AVISO_BORRAR_MARCA);
-                modelo.borrarMarca(datos);
+                marcaSeleccionada = (Marker) datos;
+                Object[] marca = new Object[3];
+                marca[0] = marcaSeleccionada.getPosition().latitude;
+                marca[1] = marcaSeleccionada.getPosition().longitude;
+                marca[2] = marcaSeleccionada.getTitle();
+                modelo.borrarMarca(marca);
                 break;
-            default:
-                break;
+
         }
 
 
@@ -116,14 +129,14 @@ public class PresentadorMapa implements IPresentadorMapa {
         Object[] datos = new Object[2];
         datos[0] = latitud;
         datos[1] = longitud;
-        appMediador.getVistaMapa().mostrarDialogo(datos);
+        vistaMapa.mostrarDialogo(datos);
     }
 
     // TODO Método redefinido tratarToqueMarca que presenta un menú para tratar una marca seleccionada por el usuario
 
     @Override
-    public void tratarTogueMarca(Object datos) {
-        appMediador.getVistaMapa().mostrarMenu(datos);
+    public void tratarToqueMarca(Object datos) {
+        vistaMapa.mostrarMenu(datos);
     }
 
     // TODO Método redefinido editarMarca que edita la información de una marca dada seleccionada por el usuario
@@ -132,12 +145,12 @@ public class PresentadorMapa implements IPresentadorMapa {
     @Override
     public void editarMarca(Object datos) {
         //TODO convertir a marker
-        Marker marker = (Marker) datos;
+        marcaSeleccionada = (Marker) datos;
         String[] marca = new String[3];
-        marca[0] = String.valueOf(marker.getPosition().latitude);
-        marca[1] = String.valueOf(marker.getPosition().longitude);
-        marca[2] = marker.getTitle();
-        appMediador.getVistaMapa().mostrarInformacion(marca);
+        marca[0] = Double.toString(marcaSeleccionada.getPosition().latitude);
+        marca[1] = Double.toString(marcaSeleccionada.getPosition().longitude);
+        marca[2] = marcaSeleccionada.getTitle();
+        vistaMapa.mostrarInformacion(marca);
 
 
     }

@@ -17,8 +17,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import pem.tema4.AppMediador;
 import pem.tema4.presentador.IPresentadorMapa;
 
-import java.util.ArrayList;
-
 public class VistaMapa extends FragmentActivity implements OnMapReadyCallback, IVistaMapa, GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener{
 
     private GoogleMap mMap;
@@ -52,9 +50,9 @@ public class VistaMapa extends FragmentActivity implements OnMapReadyCallback, I
         mMap.setOnMapClickListener(this);
         mMap.setOnMarkerClickListener(this);
         // TODO Solicitar al presentador que inice el GPS
-        appMediador.getPresentadorMapa().iniciarGps();
+        presentadorMapa.iniciarGps();
         // TODO Solicitar al presentador que actualice el mapa en el estado inicial
-        appMediador.getPresentadorMapa().actualizarMapa(AppMediador.ESTADO_INICIAL,null);
+        presentadorMapa.actualizarMapa(AppMediador.ESTADO_INICIAL,null);
     }
 
     // Método actualizarMapa que recibe por parámetros un array de Object en el que se almacena
@@ -106,13 +104,12 @@ public class VistaMapa extends FragmentActivity implements OnMapReadyCallback, I
             public void onClick(DialogInterface dialog, int which) {
                 // TODO Eliminar el diálogo y crear un objeto array de Object con la información de la marca (latitud,
                 // longitud y titulo) y pedir al presentador que actualice el mapa para el estado de agregar marca.
-
                 dialog.dismiss();
                 Object[] datos = new Object[3];
                 datos[0] = latitud;
                 datos[1] = longitud;
-                datos[2] = titulo;
-                appMediador.getPresentadorMapa().actualizarMapa(AppMediador.ESTADO_AGREGAR_MARCA, datos);
+                datos[2] = titulo.getText().toString();
+                presentadorMapa.actualizarMapa(AppMediador.ESTADO_AGREGAR_MARCA, datos);
 
             }
         });
@@ -140,12 +137,12 @@ public class VistaMapa extends FragmentActivity implements OnMapReadyCallback, I
         // con los recibidos por parámetros. Actualizar el objeto builder con el layout inflado. Fijarse en
         // como se ha hecho en el método mostrarDialogo.
         View vistaDialogo = this.getLayoutInflater().inflate(R.layout.informacion_marca, null);
-        TextView latitud = (TextView)vistaDialogo.findViewById(R.id.latitud);
-        latitud.setText(latitud.getText()+ " "+datos[0]);
-        TextView longitud = (TextView)vistaDialogo.findViewById(R.id.longitud);
-        longitud.setText(longitud.getText()+ " " +datos[1]);
-        TextView titulo = (TextView)vistaDialogo.findViewById(R.id.titulo);
-        titulo.setText(titulo.getText()+ " "+datos[2]);
+        TextView latitud = (TextView) vistaDialogo.findViewById(R.id.latitud);
+        latitud.setText(latitud.getText()+" "+datos[0]);
+        TextView longitud = (TextView) vistaDialogo.findViewById(R.id.longitud);
+        longitud.setText(longitud.getText()+" "+datos[1]);
+        TextView titulo = (TextView) vistaDialogo.findViewById(R.id.titulo);
+        titulo.setText(titulo.getText()+" "+datos[2]);
         builder.setView(vistaDialogo);
 
 
@@ -156,7 +153,6 @@ public class VistaMapa extends FragmentActivity implements OnMapReadyCallback, I
         });
         builder.show();
     }
-
 
     // Método redefinido mostrarMenu que muestra un diálogo con un menú en el mapa con las opciones: editar y borrar
     // sobre una marca
@@ -177,7 +173,7 @@ public class VistaMapa extends FragmentActivity implements OnMapReadyCallback, I
             public void onClick(View view) {
                 dialog.cancel();
                 // TODO Solicitar al presentador que edite la marca
-                appMediador.getPresentadorMapa().editarMarca(marca);
+                presentadorMapa.editarMarca(marca);
 
             }
         });
@@ -188,6 +184,7 @@ public class VistaMapa extends FragmentActivity implements OnMapReadyCallback, I
                 dialog.cancel();
                 // TODO Solicitar al presentador que borre la marca (borrar marca es un estado de la aplicación que
                 // implica la actualización del mapa.
+                presentadorMapa.actualizarMapa(AppMediador.ESTADO_BORRAR_MARCA, marca);
 
             }
         });
@@ -206,7 +203,14 @@ public class VistaMapa extends FragmentActivity implements OnMapReadyCallback, I
     }
 
     // TODO Método redefinido borrarMarca que borra la marca dada por parámetros.
-   
+
+    @Override
+    public void borrarMarca(Object marca) {
+        Marker marker = (Marker) marca;
+        marker.remove();
+    }
+
+
 
     @Override
     public void onDestroy() {
@@ -216,11 +220,12 @@ public class VistaMapa extends FragmentActivity implements OnMapReadyCallback, I
 
     @Override
     public void onMapClick(LatLng latLng) {
-        appMediador.getPresentadorMapa().tratarToqueMapa(latLng.latitude, latLng.longitude);
+        presentadorMapa.tratarToqueMapa(latLng.latitude, latLng.longitude);
     }
 
     @Override
     public boolean onMarkerClick(Marker marker) {
+        presentadorMapa.tratarToqueMarca(marker);
         return false;
     }
 }
